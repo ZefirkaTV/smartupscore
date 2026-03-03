@@ -34,7 +34,7 @@
       <thead>
         <tr>
           <th>Учень</th>
-          <th>Програмуванняяяяяя</th>
+          <th>Програмування</th>
           <th>Робототехніка</th>
         </tr>
       </thead>
@@ -44,7 +44,7 @@
 
   <script>
     // Посилання на твій CSV файл (актуальне згідно твоїх скріншотів)
-    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg0Z7bbHBgCFkbrkT7cvjjgHEwRccu_AOzamEIlYlbx-WU7sR1elhVFypbzh8zwmO5ZmY4uVPPlEI-/pub?output=csv';
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXuEirbPdZ_qBQKpmktbVO_TBvc33hCbiYf3oen1ceR2zj-vnHUetel791wpWRtPlQIGxgykuBsypf/pub?gid=1247776630&single=true&output=csv';
 
     async function fetchData() {
       try {
@@ -56,14 +56,11 @@
         
         // Знаходимо рядки-заголовки (рядок 2 у твоїй таблиці, індекс 1)
         const headerRow = rows[1];
-        
-        // Динамічний пошук стовпців за назвою (щоб не було одиниць)
-        let progCol = headerRow.indexOf('Залишок');
-        let roboCol = headerRow.indexOf('Відходили 2');
+     
 
         // Якщо за назвою не знайдено, використовуємо резервні координати (FQ=172, FR=173)
-        if (progCol === -1) progCol = 171;
-        if (roboCol === -1) roboCol = 172;
+        if (progCol === -1) progCol = 10;
+        if (roboCol === -1) roboCol = 11;
 
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
