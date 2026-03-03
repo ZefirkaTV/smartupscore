@@ -83,6 +83,11 @@ async function fetchData() {
   }
 }
 
+const response = await fetch(
+  url + '&t=' + Date.now(),
+  { cache: "no-store" }
+);
+
 fetchData();
 setInterval(fetchData, 60000);
 </script>
