@@ -40,7 +40,11 @@ const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXuEirbPdZ_qBQKpmk
 
 async function fetchData() {
   try {
-    const response = await fetch(url + '&cacheBust=' + Date.now());
+    const response = await fetch(
+      url + '&t=' + Date.now(),
+      { cache: "no-store" }
+    );
+
     const csv = await response.text();
 
     const rows = csv.split('\n').map(r =>
@@ -54,8 +58,8 @@ async function fetchData() {
     for (let i = 2; i < rows.length; i++) {
 
       const name = rows[i][0];  
-      const pVal = rows[i][9] || '0';   // П
-      const rVal = rows[i][10] || '0';   // Р
+      const pVal = rows[i][10] || '0';
+      const rVal = rows[i][11] || '0';
 
       if (name && name.length > 1) {
 
@@ -83,10 +87,6 @@ async function fetchData() {
   }
 }
 
-const response = await fetch(
-  url + '&t=' + Date.now(),
-  { cache: "no-store" }
-);
 
 fetchData();
 setInterval(fetchData, 60000);
