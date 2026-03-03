@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Журнал відвідуваності</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f4f7f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 850px; }
+    h1 { text-align: center; color: #1e293b; margin-bottom: 5px; font-weight: 800; }
+    .status { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    th { background: #6366f1; color: white; padding: 15px; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 15px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: #f8fafc; }
+    
+    /* Стилі для цифр */
+    .pos { color: #10b981; font-weight: 700; background: #ecfdf5; padding: 4px 10px; border-radius: 8px; }
+    .neg { color: #ef4444; font-weight: 700; background: #fef2f2; padding: 4px 10px; border-radius: 8px; }
+    
+    @media (max-width: 600px) {
+      .container { padding: 15px; }
+      th, td { padding: 10px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Відвідуваність учнів</h1>
+    <div id="updateTime" class="status">Синхронізація з сервером...</div>
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Учень</th>
+          <th>Програмування</th>
+          <th>Робототехніка</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Посилання на твій CSV файл (актуальне згідно твоїх скріншотів)
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg0Z7bbHBgCFkbrkT7cvjjgHEwRccu_AOzamEIlYlbx-WU7sR1elhVFypbzh8zwmO5ZmY4uVPPlEI-/pub?output=csv';
+
+    async function fetchData() {
+      try {
+        const response = await fetch(url);
+        const csv = await response.text();
+        
+        // Розбиваємо CSV на масив, очищаючи від зайвих лапок
+        const rows = csv.split('\n').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim()));
+        
+        // Знаходимо рядки-заголовки (рядок 2 у твоїй таблиці, індекс 1)
+        const headerRow = rows[1];
+        
+        // Динамічний пошук стовпців за назвою (щоб не було одиниць)
+        let progCol = headerRow.indexOf('Залишок');
+        let roboCol = headerRow.indexOf('Відходили 2');
+
+        // Якщо за назвою не знайдено, використовуємо резервні координати (FQ=172, FR=173)
+        if (progCol === -1) progCol = 171;
+        if (roboCol === -1) roboCol = 172;
+
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        // Починаємо з 4-го рядка (індекс 3)
+        for (let i = 2; i < rows.length; i++) {
+          const name = rows[i][0]; // Стовпець A
+          const pVal = rows[i][progCol] || '0';
+          const rVal = rows[i][roboCol] || '0';
+
+          // Відсікаємо порожні рядки та технічне сміття
+          if (name && name.length > 2 && !name.includes('{') && !name.includes(':')) {
+            const tr = document.createElement('tr');
+            
+            // Логіка підсвічування кольором
+            const pClass = parseInt(pVal) < 0 ? 'neg' : 'pos';
+            const rClass = parseInt(rVal) < 0 ? 'neg' : 'pos';
+
+            tr.innerHTML = `
+              <td>${name}</td>
+              <td><span class="${pClass}">${pVal}</span></td>
+              <td><span class="${rClass}">${rVal}</span></td>
+            `;
+            tbody.appendChild(tr);
+          }
+        }
+        document.getElementById('updateTime').innerText = 'Останнє оновлення: ' + new Date().toLocaleTimeString();
+      } catch (e) {
+        document.getElementById('updateTime').innerText = 'Помилка зв\'язку з Google Sheets';
+      }
+    }
+
+    // Перший запуск та автооновлення щохвилини
+    fetchData();
+    setInterval(fetchData, 60000);
+  </script>
+</body>
+</html>
