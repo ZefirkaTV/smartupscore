@@ -27,8 +27,8 @@
       <thead>
         <tr>
           <th>Учень</th>
-          <th>П</th>
-          <th>Р</th>
+          <th>Програмування</th>
+          <th>Робототехніка</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -54,8 +54,8 @@ async function fetchData() {
     for (let i = 2; i < rows.length; i++) {
 
       const name = rows[i][0];  
-      const pVal = rows[i][10] || '0';   // П
-      const rVal = rows[i][11] || '0';   // Р
+      const pVal = rows[i][11] || '0';   // П
+      const rVal = rows[i][10] || '0';   // Р
 
       if (name && name.length > 1) {
 
