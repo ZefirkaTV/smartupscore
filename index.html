@@ -7,16 +7,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; background: #f4f7f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
-    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 850px; }
+    .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 1000px; } /* Трохи розширив для нових колонок */
     h1 { text-align: center; color: #1e293b; margin-bottom: 5px; font-weight: 800; }
     .status { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
-    th { background: #6366f1; color: white; padding: 15px; text-align: left; font-size: 18px; }
+    th { background: #6366f1; color: white; padding: 15px; text-align: left; font-size: 16px; }
     td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
     tr:last-child td { border-bottom: none; }
     tr:hover { background: #f8fafc; }
-    .pos { color: #10b981; font-weight: 700; background: #ecfdf5; padding: 4px 10px; border-radius: 8px; }
-    .neg { color: #ef4444; font-weight: 700; background: #fef2f2; padding: 4px 10px; border-radius: 8px; }
+    .pos { color: #10b981; font-weight: 700; background: #ecfdf5; padding: 4px 10px; border-radius: 8px; display: inline-block; min-width: 20px; text-align: center; }
+    .neg { color: #ef4444; font-weight: 700; background: #fef2f2; padding: 4px 10px; border-radius: 8px; display: inline-block; min-width: 20px; text-align: center; }
   </style>
 </head>
 <body>
@@ -27,8 +27,11 @@
       <thead>
         <tr>
           <th>Учень</th>
-          <th>Програмування</th>
-          <th>Робототехніка</th>
+          <th>Прогр.</th>
+          <th>Робот.</th>
+          <th>Малюв.</th>
+          <th>Хіп-хоп</th>
+          <th>Англ.</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -55,22 +58,32 @@ async function fetchData() {
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
 
+    // Функція для визначення класу (червоний/зелений)
+    const getBadge = (val) => {
+        const num = parseInt(val) || 0;
+        const cls = num < 0 ? 'neg' : 'pos';
+        return `<span class="${cls}">${val || '0'}</span>`;
+    };
+
     for (let i = 2; i < rows.length; i++) {
-
       const name = rows[i][0];  
-      const pVal = rows[i][9] || '0';
-      const rVal = rows[i][10] || '0';
-
+      
       if (name && name.length > 1) {
-
-        const pClass = parseInt(pVal) < 0 ? 'neg' : 'pos';
-        const rClass = parseInt(rVal) < 0 ? 'neg' : 'pos';
+        // Отримуємо дані з відповідних стовпчиків (індекси 9, 10, 11, 12, 13)
+        const pVal = rows[i][9];
+        const rVal = rows[i][10];
+        const mVal = rows[i][11]; // Малювання
+        const hVal = rows[i][12]; // Хіп-хоп
+        const aVal = rows[i][13]; // Англійська
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${name}</td>
-          <td><span class="${pClass}">${pVal}</span></td>
-          <td><span class="${rClass}">${rVal}</span></td>
+          <td>**${name}**</td>
+          <td>${getBadge(pVal)}</td>
+          <td>${getBadge(rVal)}</td>
+          <td>${getBadge(mVal)}</td>
+          <td>${getBadge(hVal)}</td>
+          <td>${getBadge(aVal)}</td>
         `;
 
         tbody.appendChild(tr);
@@ -87,9 +100,7 @@ async function fetchData() {
   }
 }
 
-
 fetchData();
-//setInterval(fetchData, 60000);
 </script>
 
 </body>
