@@ -10,92 +10,82 @@
     .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 850px; }
     h1 { text-align: center; color: #1e293b; margin-bottom: 5px; font-weight: 800; }
     .status { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
-    th { background: #6366f1; color: white; padding: 15px; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-    td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 15px; }
+    table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
+    th { background: #6366f1; color: white; padding: 15px; text-align: left; font-size: 14px; }
+    td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
     tr:last-child td { border-bottom: none; }
     tr:hover { background: #f8fafc; }
-    
-    /* Стилі для цифр */
     .pos { color: #10b981; font-weight: 700; background: #ecfdf5; padding: 4px 10px; border-radius: 8px; }
     .neg { color: #ef4444; font-weight: 700; background: #fef2f2; padding: 4px 10px; border-radius: 8px; }
-    
-    @media (max-width: 600px) {
-      .container { padding: 15px; }
-      th, td { padding: 10px; font-size: 13px; }
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>📊 Відвідуваність учнів</h1>
     <div id="updateTime" class="status">Синхронізація з сервером...</div>
-    <table id="attendanceTable">
+    <table>
       <thead>
         <tr>
           <th>Учень</th>
-          <th>Програмування</th>
-          <th>Робототехніка</th>
+          <th>П</th>
+          <th>Р</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
 
-  <script>
-    // Посилання на твій CSV файл (актуальне згідно твоїх скріншотів)
-    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXuEirbPdZ_qBQKpmktbVO_TBvc33hCbiYf3oen1ceR2zj-vnHUetel791wpWRtPlQIGxgykuBsypf/pub?gid=1247776630&single=true&output=csv';
+<script>
+const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXuEirbPdZ_qBQKpmktbVO_TBvc33hCbiYf3oen1ceR2zj-vnHUetel791wpWRtPlQIGxgykuBsypf/pub?gid=1247776630&single=true&output=csv';
 
-    async function fetchData() {
-      try {
-        const response = await fetch(url);
-        const csv = await response.text();
-        
-        // Розбиваємо CSV на масив, очищаючи від зайвих лапок
-        const rows = csv.split('\n').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim()));
-        
-        // Знаходимо рядки-заголовки (рядок 2 у твоїй таблиці, індекс 1)
-        const headerRow = rows[1];
-     
+async function fetchData() {
+  try {
+    const response = await fetch(url + '&cacheBust=' + Date.now());
+    const csv = await response.text();
 
-        // Якщо за назвою не знайдено, використовуємо резервні координати (FQ=172, FR=173)
-        if (progCol === -1) progCol = 10;
-        if (roboCol === -1) roboCol = 11;
+    const rows = csv.split('\n').map(r =>
+      r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+       .map(c => c.replace(/^"|"$/g, '').trim())
+    );
 
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
 
-        // Починаємо з 4-го рядка (індекс 3)
-        for (let i = 2; i < rows.length; i++) {
-          const name = rows[i][0]; // Стовпець A
-          const pVal = rows[i][progCol] || '0';
-          const rVal = rows[i][roboCol] || '0';
+    for (let i = 2; i < rows.length; i++) {
 
-          // Відсікаємо порожні рядки та технічне сміття
-          if (name && name.length > 2 && !name.includes('{') && !name.includes(':')) {
-            const tr = document.createElement('tr');
-            
-            // Логіка підсвічування кольором
-            const pClass = parseInt(pVal) < 0 ? 'neg' : 'pos';
-            const rClass = parseInt(rVal) < 0 ? 'neg' : 'pos';
+      const name = rows[i][0];  
+      const pVal = rows[i][10] || '0';   // П
+      const rVal = rows[i][11] || '0';   // Р
 
-            tr.innerHTML = `
-              <td>${name}</td>
-              <td><span class="${pClass}">${pVal}</span></td>
-              <td><span class="${rClass}">${rVal}</span></td>
-            `;
-            tbody.appendChild(tr);
-          }
-        }
-        document.getElementById('updateTime').innerText = 'Останнє оновлення: ' + new Date().toLocaleTimeString();
-      } catch (e) {
-        document.getElementById('updateTime').innerText = 'Помилка зв\'язку з Google Sheets';
+      if (name && name.length > 1) {
+
+        const pClass = parseInt(pVal) < 0 ? 'neg' : 'pos';
+        const rClass = parseInt(rVal) < 0 ? 'neg' : 'pos';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${name}</td>
+          <td><span class="${pClass}">${pVal}</span></td>
+          <td><span class="${rClass}">${rVal}</span></td>
+        `;
+
+        tbody.appendChild(tr);
       }
     }
 
-    // Перший запуск та автооновлення щохвилини
-    fetchData();
-    setInterval(fetchData, 60000);
-  </script>
+    document.getElementById('updateTime').innerText =
+      'Останнє оновлення: ' + new Date().toLocaleTimeString();
+
+  } catch (e) {
+    document.getElementById('updateTime').innerText =
+      "Помилка зв'язку з Google Sheets";
+    console.error(e);
+  }
+}
+
+fetchData();
+setInterval(fetchData, 60000);
+</script>
+
 </body>
 </html>
