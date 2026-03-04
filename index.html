@@ -80,9 +80,15 @@
       font-weight: 700;
       font-size: 13px;
     }
-    .pos { color: #10b981; background: #ecfdf5; } /* Зелений для > 0 */
-    .neg { color: #ef4444; background: #fef2f2; } /* Червоний для < 0 */
-    .zero { color: #b45309; background: #fffbeb; } /* Жовтий/Оранжевий для 0 */
+    
+    /* Приємний зелений */
+    .pos { color: #065f46; background: #d1fae5; } 
+    
+    /* Приємний червоний */
+    .neg { color: #991b1b; background: #fee2e2; } 
+    
+    /* Оновлений ПРИЄМНИЙ жовтий (Amber) */
+    .zero { color: #92400e; background: #fef3c7; } 
 
     @media (min-width: 768px) {
       body { padding: 30px; }
@@ -134,12 +140,12 @@ async function fetchData() {
 
     const getBadge = (val) => {
         const num = parseInt(val) || 0;
-        let cls = 'zero'; // По замовчуванню жовтий для 0
+        let cls = 'zero'; 
         
         if (num > 0) {
-            cls = 'pos'; // Зелений
+            cls = 'pos'; 
         } else if (num < 0) {
-            cls = 'neg'; // Червоний
+            cls = 'neg'; 
         }
         
         return `<span class="${cls}">${val || '0'}</span>`;
